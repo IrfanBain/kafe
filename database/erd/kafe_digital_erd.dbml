@@ -1,0 +1,270 @@
+// ERD untuk Kafe Digital - Laravel POS System
+// Copy paste code ini ke dbdiagram.io untuk melihat visual ERD
+
+Project "Kafe Digital POS System" {
+  database_type: 'MySQL'
+  Note: '''
+    # Kafe Digital - Point of Sale System
+    
+    Sistem POS untuk kafe dengan fitur:
+    - Manajemen produk dan kategori
+    - Sistem order dan pembayaran
+    - Integrasi Midtrans payment gateway
+    - Manajemen meja dan QR code
+    - Dashboard cashier dan admin
+    - Pengaturan toko
+  '''
+}
+
+// ===== USER MANAGEMENT =====
+Table users {
+  id bigint [pk, increment]
+  name varchar(255) [not null]
+  email varchar(255) [unique, not null]
+  email_verified_at timestamp [null]
+  password varchar(255) [not null]
+  remember_token varchar(100) [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Admin dan staff users'
+}
+
+Table password_reset_tokens {
+  email varchar(255) [pk]
+  token varchar(255) [not null]
+  created_at timestamp [null]
+}
+
+Table sessions {
+  id varchar(255) [pk]
+  user_id bigint [null]
+  ip_address varchar(45) [null]
+  user_agent text [null]
+  payload longtext [not null]
+  last_activity int [not null]
+}
+
+// ===== PRODUCT MANAGEMENT =====
+Table categories {
+  id bigint [pk, increment]
+  name varchar(255) [not null]
+  description text [null]
+  image varchar(255) [null]
+  is_active boolean [default: true]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Kategori produk (makanan, minuman, dessert, dll)'
+}
+
+Table products {
+  id bigint [pk, increment]
+  category_id bigint [not null]
+  name varchar(255) [not null]
+  description text [null]
+  price decimal(10,2) [not null]
+  image varchar(255) [null]
+  is_available boolean [default: true]
+  stock int [default: 0]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Master data produk yang dijual'
+}
+
+// ===== TABLE MANAGEMENT =====
+Table tables {
+  id bigint [pk, increment]
+  number varchar(255) [unique, not null]
+  qr_code varchar(255) [unique, not null]
+  capacity int [not null]
+  status enum('available','occupied','reserved') [default: 'available']
+  location text [null]
+  is_available boolean [default: true]
+  name varchar(255) [null]
+  uuid varchar(255) [unique, null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Meja dalam kafe dengan QR code untuk order'
+}
+
+// ===== ORDER MANAGEMENT =====
+Table orders {
+  id bigint [pk, increment]
+  order_number varchar(255) [unique, not null]
+  table_id bigint [null]
+  customer_name varchar(255) [null]
+  customer_phone varchar(20) [null]
+  total_amount decimal(10,2) [not null]
+  status enum('pending','confirmed','preparing','ready','served','completed','cancelled') [default: 'pending']
+  payment_status enum('pending','paid','failed','refunded') [default: 'pending']
+  order_type enum('dine_in','take_away') [default: 'dine_in']
+  created_by_cashier boolean [default: false]
+  notes text [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Header order pelanggan'
+}
+
+Table order_items {
+  id bigint [pk, increment]
+  order_id bigint [not null]
+  product_id bigint [not null]
+  quantity int [not null]
+  price decimal(10,2) [not null]
+  total decimal(10,2) [not null] // atau subtotal
+  notes text [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Detail item dalam order'
+}
+
+// ===== PAYMENT MANAGEMENT =====
+Table transactions {
+  id bigint [pk, increment]
+  order_id bigint [not null]
+  transaction_id varchar(255) [unique, not null]
+  payment_method varchar(255) [not null]
+  amount decimal(10,2) [not null]
+  amount_paid decimal(15,2) [null]
+  change_amount decimal(15,2) [default: 0]
+  status enum('pending','success','failed','cancelled','expired') [default: 'pending']
+  midtrans_response json [null]
+  snap_token varchar(255) [null]
+  midtrans_order_id varchar(255) [null]
+  paid_at timestamp [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Transaksi pembayaran dengan integrasi Midtrans'
+}
+
+// ===== SYSTEM SETTINGS =====
+Table settings {
+  id bigint [pk, increment]
+  key varchar(255) [unique, not null]
+  value text [null]
+  type varchar(255) [default: 'string']
+  description text [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+  
+  Note: 'Pengaturan sistem (store_name, store_logo, dll)'
+}
+
+// ===== LARAVEL SYSTEM TABLES =====
+Table cache {
+  key varchar(255) [pk]
+  value mediumtext [not null]
+  expiration int [not null]
+}
+
+Table cache_locks {
+  key varchar(255) [pk]
+  owner varchar(255) [not null]
+  expiration int [not null]
+}
+
+Table jobs {
+  id bigint [pk, increment]
+  queue varchar(255) [not null]
+  payload longtext [not null]
+  attempts tinyint [not null]
+  reserved_at int [null]
+  available_at int [not null]
+  created_at int [not null]
+}
+
+Table job_batches {
+  id varchar(255) [pk]
+  name varchar(255) [not null]
+  total_jobs int [not null]
+  pending_jobs int [not null]
+  failed_jobs int [not null]
+  failed_job_ids longtext [not null]
+  options mediumtext [null]
+  cancelled_at int [null]
+  created_at int [not null]
+  finished_at int [null]
+}
+
+Table failed_jobs {
+  id bigint [pk, increment]
+  uuid varchar(255) [unique, not null]
+  connection text [not null]
+  queue text [not null]
+  payload longtext [not null]
+  exception longtext [not null]
+  failed_at timestamp [default: `current_timestamp()`]
+}
+
+// ===== RELATIONSHIPS =====
+// Product Relationships
+Ref: products.category_id > categories.id [delete: cascade]
+
+// Order Relationships
+Ref: orders.table_id > tables.id [delete: set null]
+Ref: order_items.order_id > orders.id [delete: cascade]
+Ref: order_items.product_id > products.id [delete: cascade]
+Ref: transactions.order_id > orders.id [delete: cascade]
+
+// Session Relationships
+Ref: sessions.user_id > users.id [delete: set null]
+
+// ===== BUSINESS LOGIC NOTES =====
+Note orders {
+  '''
+  Order Flow:
+  1. pending - order dibuat
+  2. confirmed - order dikonfirmasi
+  3. preparing - kitchen sedang memasak
+  4. ready - order siap diambil/diantar
+  5. served - order sudah diantar ke meja
+  6. completed - order selesai
+  7. cancelled - order dibatalkan
+  
+  Payment Status:
+  - pending: belum bayar
+  - paid: sudah bayar
+  - failed: pembayaran gagal
+  - refunded: uang dikembalikan
+  '''
+}
+
+Note transactions {
+  '''
+  Payment Methods:
+  - cash: pembayaran tunai
+  - qris: QRIS Midtrans
+  - bank_transfer: transfer bank
+  - credit_card: kartu kredit
+  - e_wallet: dompet digital (GoPay, OVO, dll)
+  
+  Midtrans Integration:
+  - snap_token: untuk pembayaran online
+  - midtrans_response: response dari Midtrans
+  - midtrans_order_id: ID order di Midtrans
+  '''
+}
+
+Note settings {
+  '''
+  Common Settings Keys:
+  - store_name: nama toko
+  - store_logo: path logo toko
+  - store_description: deskripsi toko
+  - store_address: alamat toko
+  - store_phone: telepon toko
+  - store_email: email toko
+  
+  Types:
+  - string: text pendek
+  - text: text panjang
+  - image: path gambar
+  - boolean: true/false
+  '''
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Midtrans Callback</title>
+    </head>
+    <body>
+        <h1>Test Midtrans Callback</h1>
+
+        <div>
+            <h3>Current Settings:</h3>
+            <p>
+                <strong>Notification URL:</strong>
+                https://41968eb4a95e.ngrok-free.app/payment/callback
+            </p>
+            <p><strong>Method:</strong> POST</p>
+            <p>
+                <strong>CSRF Protection:</strong> Disabled (withoutMiddleware)
+            </p>
+        </div>
+
+        <div>
+            <h3>Test with cURL:</h3>
+            <pre>
+curl -X POST "https://41968eb4a95e.ngrok-free.app/payment/callback" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "order_id": "ORD-20250929-1094-1759147523",
+    "transaction_status": "settlement",
+    "payment_type": "bank_transfer",
+    "transaction_time": "2025-09-29 13:20:00",
+    "gross_amount": "53000.00",
+    "fraud_status": "accept"
+  }'
+        </pre
+            >
+        </div>
+
+        <div>
+            <h3>Expected Response:</h3>
+            <pre>{"status":"success"}</pre>
+        </div>
+
+        <form
+            action="https://41968eb4a95e.ngrok-free.app/payment/callback"
+            method="POST"
+        >
+            <h3>Quick Test Form:</h3>
+            <input
+                type="hidden"
+                name="order_id"
+                value="ORD-20250929-1094-1759147523"
+            />
+            <input type="hidden" name="transaction_status" value="settlement" />
+            <input type="hidden" name="payment_type" value="bank_transfer" />
+            <input type="hidden" name="gross_amount" value="53000.00" />
+            <input type="hidden" name="fraud_status" value="accept" />
+            <button type="submit">Test Callback</button>
+        </form>
+    </body>
+</html>
