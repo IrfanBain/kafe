@@ -124,7 +124,7 @@
             @foreach($order->orderItems as $item)
                 <div class="flex items-center space-x-4 py-3 border-b border-gray-100 last:border-b-0">
                     @if($item->product->image)
-                        <img src="{{ Storage::url($item->product->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 object-cover rounded-lg">
+                        <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-12 h-12 object-cover rounded-lg">
                     @else
                         <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
                             <span class="text-gray-400 text-xs">No Image</span>

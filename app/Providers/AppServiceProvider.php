@@ -23,51 +23,38 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+public function boot(): void
     {
-        \Illuminate\Support\Facades\URL::forceRootUrl(config(key: 'app.url'));
+        \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
 
         if (str_contains(config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-        // Share store settings with all views
-       $storeSettings = []; // Definisikan variabel default
+        $storeSettings = [];
 
-    try {
-        // Cek dulu apakah tabel 'settings' ada
-        if (Schema::hasTable('settings')) {
-            // Ambil pengaturan dari cache selamanya.
+        try {
+            // LANGSUNG AMBIL DARI CACHE/DB, GAK USAH TANYA TABEL ADA/ENGGAK
+            // KARENA KALAU GAGAL, DIA AKAN LARI KE 'CATCH' DI BAWAH
             $storeSettings = Cache::rememberForever('store_settings_global', function () {
-                Log::info('Fetching store settings from database and caching.'); // Logging (opsional)
-                // Panggil method model Anda untuk mengambil data
                 return Setting::getStoreSettings();
             });
-        } else {
-            // Fallback jika tabel belum ada
+        } catch (\Exception $e) {
+            // Kalau error (misal tabel belum ada), pakai default
             $storeSettings = $this->getFallbackSettings();
         }
-    } catch (\Exception $e) {
-        // Tangani error jika query gagal
-        Log::error('Failed to load store settings: ' . $e->getMessage());
-        $storeSettings = $this->getFallbackSettings();
-    }
 
-    // Pastikan $storeSettings selalu berupa array
-    if (!is_array($storeSettings)) {
-        Log::warning('Store settings retrieved were not an array. Using fallback.');
-        $storeSettings = $this->getFallbackSettings();
-    }
+        if (!is_array($storeSettings)) {
+            $storeSettings = $this->getFallbackSettings();
+        }
 
-    // Bagikan data $storeSettings ke semua view (hanya sekali)
-    View::share('storeSettings', $storeSettings);
-      
-}
+        View::share('storeSettings', $storeSettings);
+    }
 
 protected function getFallbackSettings(): array
 {
     return [
-        'store_name' => config('app.name', 'Kafe'),
+        'store_name' => config('app.name', 'Kafeee'),
         'store_logo' => null,
         'store_description' => 'Selamat datang di kafe kami',
         'store_address' => null,

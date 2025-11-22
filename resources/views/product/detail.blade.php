@@ -45,7 +45,7 @@
                 <!-- Product Image -->
                 <div class="relative">
                     @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-96 lg:h-full object-cover">
+                        <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-96 lg:h-full object-cover">
                     @else
                         <div class="w-full h-96 lg:h-full bg-gray-200 flex items-center justify-center">
                             <div class="text-center">
@@ -195,7 +195,7 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
                     <a href="{{ route('product.show', $relatedProduct) }}" class="block">
                         @if($relatedProduct->image)
-                            <img src="{{ Storage::url($relatedProduct->image) }}" alt="{{ $relatedProduct->name }}" class="w-full h-48 object-cover">
+                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
                         @else
                             <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
                                 <span class="text-gray-400">No Image</span>

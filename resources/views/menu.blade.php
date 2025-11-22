@@ -88,7 +88,7 @@
                                         <div class="flex space-x-4">
                                             <div class="relative">
                                                 @if($product->image)
-                                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-20 h-20 object-cover rounded-lg">
+                                                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-20 h-20 object-cover rounded-lg">
                                                 @else
                                                     <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
                                                         <span class="text-gray-400 text-xs">No Image</span>

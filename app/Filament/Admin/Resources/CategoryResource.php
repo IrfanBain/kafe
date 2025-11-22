@@ -29,9 +29,14 @@ class CategoryResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->maxLength(65535)
                     ->columnSpanFull(),
+                
+                // --- PERBAIKAN DI SINI (FORM) ---
                 Forms\Components\FileUpload::make('image')
                     ->image()
+                    ->disk('r2') // Paksa simpan ke R2
                     ->directory('categories'),
+                    // Aman, tidak ada visibility('public')
+
                 Forms\Components\Toggle::make('is_active')
                     ->default(true),
             ]);
@@ -42,7 +47,12 @@ class CategoryResource extends Resource
         return $table
         ->modifyQueryUsing(fn (Builder $query) => $query->withCount('products'))
             ->columns([
-                Tables\Columns\ImageColumn::make('image'),
+                // --- PERBAIKAN DI SINI (TABEL) ---
+                Tables\Columns\ImageColumn::make('image')
+                    ->height(50)
+                    ->circular()
+                    ->disk('r2'), // GANTI 'public' JADI 'r2'
+                
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
@@ -50,7 +60,6 @@ class CategoryResource extends Resource
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('products_count')
-                    // ->counts('products')
                     ->label('Products')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

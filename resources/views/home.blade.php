@@ -68,7 +68,7 @@
                         <a href="{{ route('product.show', $product) }}" class="block">
                             <div class="relative overflow-hidden bg-gray-100">
                                 @if($product->image)
-                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-56 object-cover transition duration-500 hover:scale-105" loading="lazy">
+                                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-56 object-cover transition duration-500 hover:scale-105" loading="lazy">
                                 @else
                                     <div class="w-full h-56 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                                         <div class="text-center">

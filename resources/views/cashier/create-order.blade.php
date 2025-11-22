@@ -44,7 +44,7 @@
                                 @foreach($category->products as $product)
                                 <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
                                     @if($product->image)
-                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-32 object-cover rounded mb-3">
+                                    <img src=src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-32 object-cover rounded mb-3">
                                     @endif
                                     <h4 class="font-medium text-gray-900 mb-2">{{ $product->name }}</h4>
                                     <p class="text-sm text-gray-600 mb-3">{{ $product->description }}</p>

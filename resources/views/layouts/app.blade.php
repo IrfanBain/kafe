@@ -28,7 +28,7 @@
                     <div class="flex items-center">
                         <a href="{{ route('home') }}" class="flex items-center space-x-2 text-xl font-bold text-gray-900">
                             @if(!empty($storeSettings['store_logo']) && $storeSettings['store_logo'])
-                                <img src="{{ asset('storage/' . $storeSettings['store_logo']) }}" alt="{{ $storeSettings['store_name'] }}" class="h-8 w-8 object-cover rounded">
+                                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="h-8 w-8 object-cover rounded">
                             @else
                                 🍽️
                             @endif

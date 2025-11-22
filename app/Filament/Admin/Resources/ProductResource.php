@@ -36,9 +36,15 @@ class ProductResource extends Resource
                     ->required()
                     ->numeric()
                     ->prefix('Rp'),
+                
+                // --- PERBAIKAN DI SINI ---
                 Forms\Components\FileUpload::make('image')
                     ->image()
-                    ->directory('products'),
+                    ->disk('r2') // Paksa simpan ke R2
+                    ->directory('products')
+                    // JANGAN PAKE visibility('public') DI SINI!
+                    , 
+
                 Forms\Components\Toggle::make('is_available')
                     ->default(true),
                 Forms\Components\TextInput::make('stock')
@@ -52,7 +58,12 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image'),
+                // --- PERBAIKAN DI SINI ---
+                Tables\Columns\ImageColumn::make('image')
+                    ->height(50)
+                    ->circular()
+                    ->disk('r2'), // GANTI 'public' JADI 'r2' BIAR GAMBARNYA MUNCUL!
+                
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category.name')

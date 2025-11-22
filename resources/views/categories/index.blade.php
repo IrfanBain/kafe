@@ -92,7 +92,7 @@
                         <a href="{{ route('category.show', $category) }}" class="block">
                             <div class="relative overflow-hidden">
                                 @if($category->image)
-                                    <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}" class="w-full h-56 object-cover group-hover:scale-110 transition duration-500">
+                                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-56 object-cover group-hover:scale-110 transition duration-500">
                                 @else
                                     <div class="w-full h-56 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                                         <div class="text-center">

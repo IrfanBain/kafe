@@ -13,7 +13,7 @@ return new class extends Migration
 {
     Schema::table('orders', function (Blueprint $table) {
         // Tambahkan baris ini
-        $table->string('customer_whatsapp')->nullable()->after('customer_email');
+        $table->string('customer_whatsapp')->nullable();
         // 'customer_email' adalah contoh, Anda bisa ganti agar posisinya pas
     });
 }

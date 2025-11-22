@@ -1,32 +1,39 @@
 <?php
 
-namespace App\Filament\Admin\Resources\SettingResource\Pages;
+namespace App\Filament\Admin\Resources\SettingResource\Pages; // <-- Sesuaikan namespace ini jika berbeda
 
-use App\Filament\Admin\Resources\SettingResource;
+use App\Filament\Admin\Resources\SettingResource; // <-- Sesuaikan namespace ini jika berbeda
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cache; // Pastikan ini ada
+use Illuminate\Support\Facades\Log;   // Tambahkan ini jika ingin pakai Log
 
 class EditSetting extends EditRecord
 {
-    protected static string $resource = SettingResource::class;
+    protected static string $resource = SettingResource::class; // <-- Sesuaikan resource ini jika berbeda
 
     protected function getHeaderActions(): array
     {
         return [
             Actions\DeleteAction::make(),
+            // Mungkin ada action lain di sini
         ];
     }
 
+    /**
+     * Jalankan setelah data berhasil disimpan.
+     */
     protected function afterSave(): void
     {
-        // Clear cache when setting is updated
-        Cache::forget("setting.{$this->record->key}");
-        
-        // Clear all store settings cache
-        Cache::forget('store_settings');
+        // Hapus cache pengaturan global agar data baru diambil
+        Cache::forget('store_settings_global'); // <-- KUNCI CACHE YANG BENAR
+
+        // Opsional: Catat di log bahwa cache sudah dihapus
+        Log::info('Cache pengaturan toko (store_settings_global) telah dihapus setelah update.');
     }
 
+    // Method mutateFormDataBeforeFill dan mutateFormDataBeforeSave Anda yang sudah ada
+    // (Tidak perlu diubah, biarkan seperti sebelumnya)
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Special handling untuk image fields
@@ -34,12 +41,12 @@ class EditSetting extends EditRecord
             // Set image_value dari value yang ada
             $data['image_value'] = $data['value'] ? [$data['value']] : [];
         }
-        
+
         // Handle boolean values untuk display
         if ($data['type'] === 'boolean' && $data['value'] !== null) {
             $data['value'] = (bool) $data['value'];
         }
-        
+
         return $data;
     }
 
@@ -60,8 +67,10 @@ class EditSetting extends EditRecord
                 if (!isset($data['value']) || empty($data['value'])) {
                     $data['value'] = null;
                 }
+                // Jika value sudah ada (tidak diubah), biarkan saja
+                // Tidak perlu else if di sini
             }
-            
+
             // Hapus image_value dari data yang akan disimpan
             unset($data['image_value']);
         }
