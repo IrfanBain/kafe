@@ -6,8 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+// 👇 1. IMPORT DUA BARIS INI
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
-class User extends Authenticatable
+// 👇 2. TAMBAHKAN "implements FilamentUser" DI SINI
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -44,5 +48,12 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // 👇 3. TAMBAHKAN FUNGSI INI DI PALING BAWAH (WAJIB)
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Return true artinya: "Siapapun yang login, boleh masuk Admin Panel"
+        return true;
     }
 }
